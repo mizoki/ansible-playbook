@@ -1,0 +1,64 @@
+- hosts: server
+  user: vagrant
+  port: 2222
+  tasks:
+    - name: system update
+      yum: name=* state=latest
+      sudo: yes
+
+    - name: install some package for build of vim
+      yum: name={{item}} state=latest
+      with_items:
+        - git
+        - gettext
+        - ncurses-libs
+        - libacl-devel
+        - gpm-libs
+        - perl-core
+        - perl-libs
+        - perl-ExtUtils-Embed
+        - python-devel
+        - ruby
+        - ruby-devel
+        - lua
+        - lua-devel
+      sudo: yes
+
+    - name: clone repository of luajit
+      git: repo=http://luajit.org/git/luajit-2.0.git dest=~/repos/luajit-2.0
+
+    - name: make luajit
+      command: make chdir=/home/vagrant/repos/luajit-2.0
+      sudo: yes
+
+    - name: make install luajit
+      command: make install chdir=/home/vagrant/repos/luajit-2.0
+      sudo: yes
+
+    - name: clone repository of vim
+      git: repo=https://github.com/vim-jp/vim.git dest=~/repos/vim
+
+    - name: configure vim
+      command: >
+        ./configure \
+        --with-features=huge \
+        --with-compiledby="mizoki <h.mizoki@gmail.com>" \
+        --prefix=/home/vagrant/local \
+        --with-x \
+        --with-gnome \
+        --enable-xim \
+        --enable-fail-if-missing \
+        --enable-luainterp=yes \
+        --enable-perlinterp=yes \
+        --enable-pythoninterp=yes \
+        --enable-rubyinterp=yes \
+        --with-lua-prefix=/usr \
+        --with-luajit \
+        --enable-multibyte
+        chdir=~/repos/vim
+
+    - name: make vim
+      command: make chdir=~/repos/vim
+
+    - name: make install vim
+      command: make install chdir=~/repos/vim
