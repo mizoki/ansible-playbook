@@ -4,30 +4,28 @@
 - name: install some package for development
   yum: name={{item}} state=latest
   with_items:
+    - autoconf
     - gettext
     - gpm-libs
     - libacl-devel
     - lua
     - lua-devel
+    - ncurses
+    - ncurses-devel
     - ncurses-libs
+    - pcre
+    - pcre-devel
     - perl-ExtUtils-Embed
     - perl-core
     - perl-libs
     - python-devel
     - ruby
     - ruby-devel
-    - zsh
     - git
     - tig
     - vim
     - tmux
     - colordiff
-
-- name: change login shell to zsh
-  user:
-    name: vagrant
-    state: present
-    shell: /bin/zsh
 
 - name: clone repository of my dotfiles
   become: yes
@@ -49,3 +47,15 @@
   when: result|failed
   args:
     chdir: /home/vagrant/repos/github.com/mizoki/dotfiles
+
+- name: check setting of $PATH
+  shell: cat /home/vagrant/.zshenv | grep -q 'export PATH=/home/vagrant/local/bin:$PATH'
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: set environment variable ($PATH)
+  become: yes
+  become_user: vagrant
+  shell: echo 'export PATH=/home/vagrant/local/bin:$PATH' >> /home/vagrant/.zshenv
+  when: result|failed
