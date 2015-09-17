@@ -23,9 +23,20 @@
     - ruby-devel
     - git
     - tig
-    - vim
     - tmux
     - colordiff
+
+- name: clone repository of luajit
+  become: yes
+  become_user: vagrant
+  git:
+    repo: http://luajit.org/git/luajit-2.0.git
+    dest: /home/vagrant/local/src/luajit-2.0
+
+- name: build luajit
+  shell: make && make install
+  args:
+    chdir: /home/vagrant/local/src/luajit-2.0
 
 - name: clone repository of my dotfiles
   become: yes

@@ -1,0 +1,43 @@
+- name: clone repository of vim
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/vim/vim.git
+    dest: /home/vagrant/repos/github.com/vim/vim
+
+- name: build vim
+  become: yes
+  become_user: vagrant
+  shell: |
+    ./configure \
+      --with-features=huge \
+      --with-compiledby="mizoki <h.mizoki@gmail.com>" \
+      --prefix=/home/vagrant/local \
+      --with-x \
+      --with-gnome \
+      --enable-xim \
+      --enable-fail-if-missing \
+      --enable-luainterp=yes \
+      --enable-perlinterp=yes \
+      --enable-pythoninterp=yes \
+      --enable-rubyinterp=yes \
+      --with-lua-prefix=/usr \
+      --with-luajit \
+      --enable-multibyte
+    make
+    make install
+    make clean
+  args:
+    chdir: /home/vagrant/repos/github.com/vim/vim
+
+- name: add loading setting of luajit (CentOS)
+  shell: |
+    echo "/usr/local/lib/" > /etc/ld.so.conf.d/luajit.conf
+    ldconfig
+
+- name: clone repository of neobundle.vim
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/Shougo/neobundle.vim.git
+    dest: /home/vagrant/.vim/bundle/neobundle.vim
