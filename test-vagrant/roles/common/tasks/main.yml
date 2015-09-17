@@ -1,0 +1,51 @@
+- name: system update
+  yum: name=* state=latest
+
+- name: install some package for development
+  yum: name={{item}} state=latest
+  with_items:
+    - gettext
+    - gpm-libs
+    - libacl-devel
+    - lua
+    - lua-devel
+    - ncurses-libs
+    - perl-ExtUtils-Embed
+    - perl-core
+    - perl-libs
+    - python-devel
+    - ruby
+    - ruby-devel
+    - zsh
+    - git
+    - tig
+    - vim
+    - tmux
+    - colordiff
+
+- name: change login shell to zsh
+  user:
+    name: vagrant
+    state: present
+    shell: /bin/zsh
+
+- name: clone repository of my dotfiles
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/mizoki/dotfiles.git
+    dest: /home/vagrant/repos/github.com/mizoki/dotfiles
+
+- name: check zshrc
+  shell: test -f /home/vagrant/.zshrc
+  register: result
+  ignore_errors: True
+  changed_when: false
+
+- name: add symbolic link of my dotfiles
+  become: yes
+  become_user: vagrant
+  shell: /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
+  when: result|failed
+  args:
+    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles

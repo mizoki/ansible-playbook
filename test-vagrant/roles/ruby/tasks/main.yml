@@ -1,0 +1,29 @@
+- name: clone repository of rbenv
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: /home/vagrant/.rbenv
+
+- name: clone repository of ruby-build
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: /home/vagrant/.rbenv/plugins/ruby-build
+
+- name: check setting of rbenv
+  shell: cat /home/vagrant/.zshenv | grep -q "rbenv init"
+  register: result
+  ignore_errors: True
+  changed_when: false
+
+- name: initial setting of rbenv
+  become: yes
+  become_user: vagrant
+  shell: |
+    echo '' >> /home/vagrant/.zshenv
+    echo '# rbenv settings' >> /home/vagrant/.zshenv
+    echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> /home/vagrant/.zshenv
+    echo 'eval "$(rbenv init -)"' >> /home/vagrant/.zshenv
+  when: result|failed
