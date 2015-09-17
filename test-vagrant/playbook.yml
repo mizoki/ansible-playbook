@@ -36,12 +36,16 @@
     - name: clone repository of rbenv
       become: yes
       become_user: vagrant
-      git: repo=https://github.com/sstephenson/rbenv.git dest=/home/vagrant/.rbenv
+      git:
+        repo: https://github.com/sstephenson/rbenv.git
+        dest: /home/vagrant/.rbenv
 
     - name: clone repository of ruby-build
       become: yes
       become_user: vagrant
-      git: repo=https://github.com/sstephenson/ruby-build.git dest=/home/vagrant/.rbenv/plugins/ruby-build
+      git:
+        repo: https://github.com/sstephenson/ruby-build.git
+        dest: /home/vagrant/.rbenv/plugins/ruby-build
 
     - name: check setting of rbenv
       shell: cat /home/vagrant/.zshenv | grep -q "rbenv init"
