@@ -1,0 +1,29 @@
+- name: clone repository of git
+  become: yes
+  become_user: vagrant
+  git:
+    repo: https://github.com/git/git.git
+    dest: /home/vagrant/repos/github.com/git/git
+
+- name: build git
+  become: yes
+  become_user: vagrant
+  shell: |
+    make configure
+    ./configure --prefix=/home/vagrant/local
+    make all doc info
+    make install install-doc install-html install-info
+    make clean
+  args:
+    chdir: /home/vagrant/repos/github.com/git/git
+
+- name: initialize setting of git
+  become: yes
+  become_user: vagrant
+  shell: |
+    git config --global user.name mizoki
+    git config --global user.email h.mizoki@gmail.com
+    git config --global core.editor vim
+    git config --global core.excludesfile /home/vagrant/.gitignore
+    git config --global core.pager "nkf -w | LESSCHARSET=utf-8 less"
+    git config --global core.autocrlf input

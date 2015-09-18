@@ -6,7 +6,10 @@
   with_items:
     - autoconf
     - automake
+    - curl-devel
+    - expat-devel
     - gettext
+    - gettext-devel
     - gpm-libs
     - libacl-devel
     - libevent
@@ -16,6 +19,7 @@
     - ncurses
     - ncurses-devel
     - ncurses-libs
+    - openssl-devel
     - pcre
     - pcre-devel
     - perl-ExtUtils-Embed
@@ -24,8 +28,10 @@
     - python-devel
     - ruby
     - ruby-devel
+    - zlib-devel
     - git
     - colordiff
+    - nkf
 
 - name: clone repository of luajit
   become: yes
