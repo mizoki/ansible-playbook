@@ -9,6 +9,8 @@
     - gettext
     - gpm-libs
     - libacl-devel
+    - libevent
+    - libevent-devel
     - lua
     - lua-devel
     - ncurses
@@ -23,7 +25,6 @@
     - ruby
     - ruby-devel
     - git
-    - tmux
     - colordiff
 
 - name: clone repository of luajit
