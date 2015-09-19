@@ -78,3 +78,13 @@
   become_user: vagrant
   shell: echo 'export PATH=/home/vagrant/local/bin:$PATH' >> /home/vagrant/.zshenv
   when: result|failed
+
+- name: check setting of timezone
+  shell: test -f /etc/localtime
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: set timezone
+  shell: ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+  when: result|failed
