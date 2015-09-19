@@ -1,0 +1,41 @@
+- name: get latest ghq version
+  become: yes
+  become_user: vagrant
+  shell: curl -sI https://github.com/motemen/ghq/releases/latest | awk -F'/' '/^Location:/{print $NF}'
+  register: ghq_latest_version
+
+- name: download latest ghq
+  become: yes
+  become_user: vagrant
+  get_url:
+    url: https://github.com/motemen/ghq/releases/download/{{ ghq_latest_version.stdout }}/ghq_linux_amd64.zip
+    dest: /tmp/ghq_linux_amd64.zip
+
+- name: extract ghq
+  become: yes
+  become_user: vagrant
+  unarchive:
+    src: /tmp/ghq_linux_amd64.zip
+    dest: /tmp/
+
+- name: copy to ghq
+  become: yes
+  become_user: vagrant
+  copy:
+    src: /tmp/ghq
+    dest: /home/vagrant/local/bin/
+    mode: 0755
+
+- name: check setting of ghq
+  shell: cat /home/vagrant/.gitconfig | grep -q "\[ghq\]"
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: initialize setting of ghq
+  become: yes
+  become_user: vagrant
+  shell: |
+    echo "[ghq]" >> /home/vagrant/.gitconfig
+    echo "root = /home/vagrant/repos" >> /home/vagrant/.gitconfig
+  when: result|failed

@@ -28,6 +28,7 @@
     - python-devel
     - ruby
     - ruby-devel
+    - unzip
     - zlib-devel
     - git
     - colordiff

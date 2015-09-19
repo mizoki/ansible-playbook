@@ -3,6 +3,7 @@
   sudo: yes
   roles:
     - common
+    - ghq
     - git
     - peco
     - ruby
