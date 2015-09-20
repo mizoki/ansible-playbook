@@ -1,0 +1,13 @@
+- name: check haskell is installed
+  shell: which ghci
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: install haskell
+  shell: |
+    wget http://sherkin.justhub.org/el6/RPMS/x86_64/justhub-release-2.0-4.0.el6.x86_64.rpm
+    rpm -ivh justhub-release-2.0-4.0.el6.x86_64.rpm
+    yum install -y haskell-platform
+    rm -f justhub-release-2.0-4.0.el6.x86_64.rpm
+  when: result|failed

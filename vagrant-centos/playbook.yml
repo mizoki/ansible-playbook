@@ -5,6 +5,7 @@
     - common
     - ghq
     - git
+    - haskell
     - peco
     - ruby
     - slidy-builder
