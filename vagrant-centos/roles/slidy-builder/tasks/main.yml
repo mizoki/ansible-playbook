@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/kaosf/slidy-builder.git
     dest: /home/vagrant/repos/github.com/kaosf/slidy-builder
+  register: result
 
 - name: install slidy-builder
   become: yes
@@ -13,3 +14,4 @@
     make install
   args:
     chdir: /home/vagrant/repos/github.com/kaosf/slidy-builder
+  when: result|changed

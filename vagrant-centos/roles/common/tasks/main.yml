@@ -40,11 +40,13 @@
   git:
     repo: http://luajit.org/git/luajit-2.0.git
     dest: /home/vagrant/local/src/luajit-2.0
+  register: result
 
 - name: build luajit
   shell: make && make install
   args:
     chdir: /home/vagrant/local/src/luajit-2.0
+  when: result|changed
 
 - name: clone repository of my dotfiles
   become: yes

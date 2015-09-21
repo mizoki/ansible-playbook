@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/jonas/tig.git
     dest: /home/vagrant/repos/github.com/jonas/tig
+  register: result
 
 - name: build tig
   become: yes
@@ -18,3 +19,4 @@
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/jonas/tig
+  when: result|changed

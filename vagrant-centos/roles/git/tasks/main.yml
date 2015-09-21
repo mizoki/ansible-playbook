@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/git/git.git
     dest: /home/vagrant/repos/github.com/git/git
+  register: result
 
 - name: build git
   become: yes
@@ -16,6 +17,8 @@
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/git/git
+  when:
+    result|changed
 
 - name: initialize setting of git
   become: yes

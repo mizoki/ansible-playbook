@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/zsh-users/zsh.git
     dest: /home/vagrant/repos/github.com/zsh-users/zsh
+  register: result
 
 - name: build zsh
   become: yes
@@ -16,6 +17,7 @@
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/zsh-users/zsh
+  when: result|changed
 
 - name: change login shell to zsh
   user:

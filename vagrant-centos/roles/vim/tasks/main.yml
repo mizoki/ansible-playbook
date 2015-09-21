@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/vim/vim.git
     dest: /home/vagrant/repos/github.com/vim/vim
+  register: result
 
 - name: build vim
   become: yes
@@ -29,11 +30,19 @@
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/vim/vim
+  when: result|changed
 
-- name: add loading setting of luajit (CentOS)
+- name: check loading setting of luajit
+  shell: test -f /etc/ld.so.conf.d/luajit.conf
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: add loading setting of luajit
   shell: |
     echo "/usr/local/lib/" > /etc/ld.so.conf.d/luajit.conf
     ldconfig
+  when: result|failed
 
 - name: clone repository of neobundle.vim
   become: yes

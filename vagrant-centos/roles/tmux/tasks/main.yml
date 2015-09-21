@@ -4,6 +4,7 @@
   git:
     repo: https://github.com/tmux/tmux.git
     dest: /home/vagrant/repos/github.com/tmux/tmux
+  register: result
 
 - name: build tmux
   become: yes
@@ -16,3 +17,4 @@
     make clean
   args:
     chdir: /home/vagrant/repos/github.com/tmux/tmux
+  when: result|changed
