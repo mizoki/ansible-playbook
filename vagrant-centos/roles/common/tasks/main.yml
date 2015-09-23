@@ -2,7 +2,9 @@
   yum: name=* state=latest
 
 - name: install some package for development
-  yum: name={{item}} state=latest
+  yum: >
+    name={{ item }}
+    state=latest
   with_items:
     - autoconf
     - automake
@@ -20,7 +22,6 @@
     - ncurses-devel
     - ncurses-libs
     - openssl-devel
-    - pandoc
     - pcre
     - pcre-devel
     - perl-ExtUtils-Embed
@@ -30,11 +31,18 @@
     - readline-devel
     - ruby
     - ruby-devel
-    - unzip
     - zlib-devel
+
+- name: install packages
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
     - git
     - colordiff
+    - pandoc
     - nkf
+    - unzip
 
 - name: clone repository of luajit
   become: yes
@@ -60,7 +68,7 @@
 - name: check zshrc
   shell: test -f /home/vagrant/.zshrc
   register: result
-  ignore_errors: True
+  ignore_errors: true
   changed_when: false
 
 - name: add symbolic link of my dotfiles
