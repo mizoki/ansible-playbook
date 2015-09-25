@@ -31,6 +31,8 @@
     - readline-devel
     - ruby
     - ruby-devel
+    - sqlite
+    - sqlite-devel
     - zlib-devel
 
 - name: install packages
