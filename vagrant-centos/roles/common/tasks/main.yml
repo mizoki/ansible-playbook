@@ -42,6 +42,7 @@
     - colordiff
     - pandoc
     - nkf
+    - tree
     - unzip
 
 - name: clone repository of luajit
