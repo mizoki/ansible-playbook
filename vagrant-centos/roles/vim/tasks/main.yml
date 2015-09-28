@@ -1,3 +1,44 @@
+- name: install some package for build
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - gettext
+    - gpm-libs
+    - libacl-devel
+    - lua
+    - lua-devel
+    - ncurses-devel
+    - ncurses-libs
+    - perl-ExtUtils-Embed
+    - perl-core
+    - perl-libs
+    - python-devel
+    - ruby
+    - ruby-devel
+
+- name: use GUI (for +clipboard)
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - gtk2-devel
+    - libXt-devel
+
+- name: clone repository of luajit
+  become: yes
+  become_user: vagrant
+  git:
+    repo: http://luajit.org/git/luajit-2.0.git
+    dest: /home/vagrant/local/src/luajit-2.0
+  register: result
+
+- name: build luajit
+  shell: make && make install
+  args:
+    chdir: /home/vagrant/local/src/luajit-2.0
+  when: result|changed
+
 - name: clone repository of vim
   become: yes
   become_user: vagrant
@@ -14,20 +55,21 @@
       --with-features=huge \
       --with-compiledby="mizoki <h.mizoki@gmail.com>" \
       --prefix=/home/vagrant/local \
-      --with-x \
-      --with-gnome \
+      --enable-gui=gtk2 \
+      --enable-fontset \
       --enable-xim \
+      --enable-multibyte \
       --enable-fail-if-missing \
       --enable-luainterp=yes \
       --enable-perlinterp=yes \
       --enable-pythoninterp=yes \
       --enable-rubyinterp=yes \
+      --with-x \
       --with-lua-prefix=/usr \
-      --with-luajit \
-      --enable-multibyte
+      --with-luajit
     make
     make install
-    make clean
+    make distclean
   args:
     chdir: /home/vagrant/repos/github.com/vim/vim
   when: result|changed
