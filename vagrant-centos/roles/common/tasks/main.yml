@@ -8,17 +8,13 @@
   with_items:
     - autoconf
     - automake
-    - curl-devel
-    - expat-devel
     - libevent
     - libevent-devel
-    - openssl-devel
     - pcre
     - pcre-devel
     - readline-devel
     - sqlite
     - sqlite-devel
-    - zlib-devel
 
 - name: install packages
   yum: >

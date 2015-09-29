@@ -1,3 +1,28 @@
+- name: install some package for build
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - curl-devel
+    - expat-devel
+    - gettext-devel
+    - openssl-devel
+    - zlib-devel
+    - asciidoc
+    - xmlto
+    - docbook2X
+    - perl-ExtUtils-MakeMaker
+
+- name: check docbook2
+  shell: test -f /usr/bin/docbook2x-texi
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: add symbolic link to docbook2x-texi
+  shell: ln -s /usr/bin/db2x_docbook2texi /usr/bin/docbook2x-texi
+  when: result|failed
+
 - name: clone repository of git
   become: yes
   become_user: vagrant
@@ -6,19 +31,40 @@
     dest: /home/vagrant/repos/github.com/git/git
   register: result
 
-- name: build git
+- name: configure
   become: yes
   become_user: vagrant
   shell: |
     make configure
     ./configure --prefix=/home/vagrant/local
-    make all doc info
-    make install install-doc install-html install-info
-    make clean
   args:
     chdir: /home/vagrant/repos/github.com/git/git
   when:
     result|changed
+
+- name: make
+  become: yes
+  become_user: vagrant
+  shell: make all doc info
+  args:
+    chdir: /home/vagrant/repos/github.com/git/git
+  when:
+    result|changed
+
+- name: make install
+  become: yes
+  become_user: vagrant
+  shell: make install install-doc install-html install-info && make clean
+  args:
+    chdir: /home/vagrant/repos/github.com/git/git
+  when:
+    result|changed
+
+- name: check git config
+  shell: cat /home/vagrant/.gitconfig | grep -q "\[user\]"
+  register: result
+  ignore_errors: true
+  changed_when: false
 
 - name: initialize setting of git
   become: yes
@@ -30,3 +76,4 @@
     git config --global core.excludesfile /home/vagrant/.gitignore
     git config --global core.pager "nkf -w | LESSCHARSET=utf-8 less"
     git config --global core.autocrlf input
+  when: result|failed
