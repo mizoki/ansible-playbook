@@ -1,3 +1,19 @@
+- name: install some package for build
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - openssl-devel
+    - readline-devel
+
+- name: install package for rails
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - sqlite
+    - sqlite-devel
+
 - name: clone repository of rbenv
   become: yes
   become_user: vagrant

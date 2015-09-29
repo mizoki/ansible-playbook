@@ -12,9 +12,6 @@
     - libevent-devel
     - pcre
     - pcre-devel
-    - readline-devel
-    - sqlite
-    - sqlite-devel
 
 - name: install packages
   yum: >
