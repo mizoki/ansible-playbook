@@ -1,0 +1,82 @@
+- name: check ricty font
+  shell: test -f /home/vagrant/.fonts/Ricty-Regular.ttf
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: install package for build
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - fontforge
+    - git
+    - unzip
+  when: result|failed
+
+- name: create temporary directory
+  become: yes
+  become_user: vagrant
+  file: path=/home/vagrant/tmp state=directory owner=vagrant group=vagrant mode=0755
+  when: result|failed
+
+- name: create font directory
+  become: yes
+  become_user: vagrant
+  file: path=/home/vagrant/.fonts state=directory owner=vagrant group=vagrant mode=0755
+  when: result|failed
+
+- name: clone repository of ricty
+  become: yes
+  become: vagrant
+  git:
+    repo: https://github.com/yascentur/Ricty.git
+    dest: /home/vagrant/repos/github.com/yascentur/Ricty
+  when: result|failed
+
+- name: download Inconsolata font
+  become: yes
+  become_user: vagrant
+  shell: |
+    wget "http://levien.com/type/myfonts/Inconsolata.otf" -O "/home/vagrant/tmp/Inconsolata.otf"
+  when: result|failed
+
+- name: download Migu 1M font
+  become: yes
+  become_user: vagrant
+  shell: |
+    wget "http://osdn.jp/frs/redir.php?m=jaist&f=%2Fmix-mplus-ipa%2F63545%2Fmigu-1m-20150712.zip" -O "/home/vagrant/tmp/migu-1m-20150712.zip"
+  when: result|failed
+
+- name: unarchive Migu 1M
+  become: yes
+  become_user: vagrant
+  unarchive:
+    src: /home/vagrant/tmp/migu-1m-20150712.zip
+    dest: /home/vagrant/tmp
+    copy: no
+  when: result|failed
+
+- name: generate Ricty
+  become: yes
+  become_user: vagrant
+  shell: /home/vagrant/repos/github.com/yascentur/Ricty/ricty_generator.sh /home/vagrant/tmp/Inconsolata.otf /home/vagrant/tmp/migu-1m-20150712/migu-1m-regular.ttf /home/vagrant/tmp/migu-1m-20150712/migu-1m-bold.ttf
+  args:
+    chdir: /home/vagrant/tmp
+  when: result|failed
+
+- name: install Ricty
+  become: yes
+  become_user: vagrant
+  shell: |
+    cp -f Ricty*.ttf /home/vagrant/.fonts/
+#   fc-cache -vf
+  args:
+    chdir: /home/vagrant/tmp
+  when: result|failed
+
+- name: delete temporary directory
+  become: yes
+  become_user: vagrant
+  file: path=/home/vagrant/tmp state=absent
+  when: result|failed
