@@ -10,8 +10,6 @@
     - automake
     - libevent
     - libevent-devel
-    - pcre
-    - pcre-devel
 
 - name: install packages
   yum: >

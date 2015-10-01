@@ -1,3 +1,13 @@
+- name: install some package for build
+  yum: >
+    name={{ item }}
+    state=latest
+  with_items:
+    - autoconf
+    - ncurses-devel
+    - pcre
+    - pcre-devel
+
 - name: clone repository of zsh
   become: yes
   become_user: vagrant
