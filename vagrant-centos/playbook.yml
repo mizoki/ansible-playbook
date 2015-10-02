@@ -5,7 +5,6 @@
     - common
     - ghq
     - git
-#   - haskell
     - peco
     - ricty
     - ruby
