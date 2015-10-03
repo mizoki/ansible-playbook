@@ -16,6 +16,7 @@
     name={{ item }}
     state=latest
   with_items:
+    - bind-utils
     - git
     - colordiff
     - pandoc
