@@ -1,0 +1,37 @@
+- name: check mongodb-org-3.0.repo
+  shell: test -f /etc/yum.repos.d/mongodb-org-3.0.repo
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: copy mongodb-org-3.0.repo
+  copy:
+    src: ../files/mongodb-org-3.0.repo
+    dest: /etc/yum.repos.d/mongodb-org-3.0.repo
+    owner: root
+    group: root
+    mode: "u=rw,g=r,o=r"
+  when: result|failed
+
+- name: check mongo is installed
+  shell: which mongo
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: install mongodb
+  yum:
+    name: mongodb-org
+    state: latest
+    enablerepo: mongodb-org-3.0
+  when: result|failed
+
+- name: start mongodb
+  service:
+    name: mongod
+    state: started
+
+- name: enable mongodb
+  service:
+    name: mongod
+    enabled: true
