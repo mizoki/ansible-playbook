@@ -21,6 +21,7 @@
     - colordiff
     - pandoc
     - nkf
+    - the_silver_searcher
     - tree
     - unzip
 
