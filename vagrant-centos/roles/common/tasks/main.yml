@@ -8,6 +8,9 @@
   with_items:
     - autoconf
     - automake
+    - gcc-c++
+    - ImageMagick
+    - ImageMagick-devel
     - libevent
     - libevent-devel
 
