@@ -28,7 +28,7 @@
 
 - name: clone repository of ricty
   become: yes
-  become: vagrant
+  become_user: vagrant
   git:
     repo: https://github.com/yascentur/Ricty.git
     dest: /home/vagrant/repos/github.com/yascentur/Ricty
