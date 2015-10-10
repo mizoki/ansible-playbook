@@ -13,19 +13,19 @@
   when: result|failed
 
 - name: check pandoc is installed
-  shell: test -f /home/vagrant/local/bin/pandoc
+  shell: test -f /home/{{ username }}/local/bin/pandoc
   register: result
   ignore_errors: true
   changed_when: false
 
 - name: install pandoc
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
     cabal update
     cabal install cabal-install
-    ln -sf /home/vagrant/.cabal/bin/cabal /home/vagrant/local/bin/
-    /home/vagrant/local/bin/cabal update
-    /home/vagrant/local/bin/cabal install pandoc
-    ln -sf /home/vagrant/.cabal/bin/pandoc /home/vagrant/local/bin/
+    ln -sf /home/{{ username }}/.cabal/bin/cabal /home/{{ username }}/local/bin/
+    /home/{{ username }}/local/bin/cabal update
+    /home/{{ username }}/local/bin/cabal install pandoc
+    ln -sf /home/{{ username }}/.cabal/bin/pandoc /home/{{ username }}/local/bin/
   when: result|failed

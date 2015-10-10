@@ -1,17 +1,17 @@
 - name: clone repository of slidy-builder
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   git:
     repo: https://github.com/kaosf/slidy-builder.git
-    dest: /home/vagrant/repos/github.com/kaosf/slidy-builder
+    dest: /home/{{ username }}/repos/github.com/kaosf/slidy-builder
   register: result
 
 - name: install slidy-builder
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
-    ./configure --prefix=/home/vagrant/local
+    ./configure --prefix=/home/{{ username }}/local
     make install
   args:
-    chdir: /home/vagrant/repos/github.com/kaosf/slidy-builder
+    chdir: /home/{{ username }}/repos/github.com/kaosf/slidy-builder
   when: result|changed

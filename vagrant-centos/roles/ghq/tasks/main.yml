@@ -1,41 +1,41 @@
 - name: get latest ghq version
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: curl -sI https://github.com/motemen/ghq/releases/latest | awk -F'/' '/^Location:/{print $NF}'
   register: ghq_latest_version
 
 - name: download latest ghq
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   get_url:
     url: https://github.com/motemen/ghq/releases/download/{{ ghq_latest_version.stdout }}/ghq_linux_amd64.zip
     dest: /tmp/ghq_linux_amd64.zip
 
 - name: extract ghq
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   unarchive:
     src: /tmp/ghq_linux_amd64.zip
     dest: /tmp/
 
 - name: copy to ghq
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   copy:
     src: /tmp/ghq
-    dest: /home/vagrant/local/bin/
+    dest: /home/{{ username }}/local/bin/
     mode: 0755
 
 - name: check setting of ghq
-  shell: cat /home/vagrant/.gitconfig | grep -q "\[ghq\]"
+  shell: cat /home/{{ username }}/.gitconfig | grep -q "\[ghq\]"
   register: result
   ignore_errors: true
   changed_when: false
 
 - name: initialize setting of ghq
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
-    echo "[ghq]" >> /home/vagrant/.gitconfig
-    echo "root = /home/vagrant/repos" >> /home/vagrant/.gitconfig
+    echo "[ghq]" >> /home/{{ username }}/.gitconfig
+    echo "root = /home/{{ username }}/repos" >> /home/{{ username }}/.gitconfig
   when: result|failed

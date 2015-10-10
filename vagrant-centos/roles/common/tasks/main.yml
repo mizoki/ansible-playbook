@@ -30,35 +30,35 @@
 
 - name: clone repository of my dotfiles
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   git:
     repo: https://github.com/mizoki/dotfiles.git
-    dest: /home/vagrant/repos/github.com/mizoki/dotfiles
+    dest: /home/{{ username }}/repos/github.com/mizoki/dotfiles
 
 - name: check zshrc
-  shell: test -f /home/vagrant/.zshrc
+  shell: test -f /home/{{ username }}/.zshrc
   register: result
   ignore_errors: true
   changed_when: false
 
 - name: add symbolic link of my dotfiles
   become: yes
-  become_user: vagrant
-  shell: /home/vagrant/repos/github.com/mizoki/dotfiles/setup.sh
+  become_user: "{{ username }}"
+  shell: /home/{{ username }}/repos/github.com/mizoki/dotfiles/setup.sh
   when: result|failed
   args:
-    chdir: /home/vagrant/repos/github.com/mizoki/dotfiles
+    chdir: /home/{{ username }}/repos/github.com/mizoki/dotfiles
 
 - name: check setting of $PATH
-  shell: cat /home/vagrant/.zshenv | grep -q 'export PATH=/home/vagrant/local/bin:$PATH'
+  shell: cat /home/{{ username }}/.zshenv | grep -q 'export PATH=/home/{{ username }}/local/bin:$PATH'
   register: result
   ignore_errors: true
   changed_when: false
 
 - name: set environment variable ($PATH)
   become: yes
-  become_user: vagrant
-  shell: echo 'export PATH=/home/vagrant/local/bin:$PATH' >> /home/vagrant/.zshenv
+  become_user: "{{ username }}"
+  shell: echo 'export PATH=/home/{{ username }}/local/bin:$PATH' >> /home/{{ username }}/.zshenv
   when: result|failed
 
 - name: check setting of timezone

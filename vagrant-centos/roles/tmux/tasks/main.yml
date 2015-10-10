@@ -1,20 +1,20 @@
 - name: clone repository of tmux
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   git:
     repo: https://github.com/tmux/tmux.git
-    dest: /home/vagrant/repos/github.com/tmux/tmux
+    dest: /home/{{ username }}/repos/github.com/tmux/tmux
   register: result
 
 - name: build tmux
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
     ./autogen.sh
-    ./configure --prefix=/home/vagrant/local
+    ./configure --prefix=/home/{{ username }}/local
     make
     make install
     make clean
   args:
-    chdir: /home/vagrant/repos/github.com/tmux/tmux
+    chdir: /home/{{ username }}/repos/github.com/tmux/tmux
   when: result|changed

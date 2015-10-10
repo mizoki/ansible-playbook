@@ -1,22 +1,22 @@
 - name: clone repository of tig
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   git:
     repo: https://github.com/jonas/tig.git
-    dest: /home/vagrant/repos/github.com/jonas/tig
+    dest: /home/{{ username }}/repos/github.com/jonas/tig
   register: result
 
 - name: build tig
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
     make configure
     ./configure \
-      --prefix=/home/vagrant/local \
+      --prefix=/home/{{ username }}/local \
       --with-ncurse
     make
     make install
     make clean
   args:
-    chdir: /home/vagrant/repos/github.com/jonas/tig
+    chdir: /home/{{ username }}/repos/github.com/jonas/tig
   when: result|changed
