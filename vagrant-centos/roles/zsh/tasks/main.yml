@@ -10,27 +10,27 @@
 
 - name: clone repository of zsh
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   git:
     repo: https://github.com/zsh-users/zsh.git
-    dest: /home/vagrant/repos/github.com/zsh-users/zsh
+    dest: /home/{{ username }}/repos/github.com/zsh-users/zsh
   register: result
 
 - name: build zsh
   become: yes
-  become_user: vagrant
+  become_user: "{{ username }}"
   shell: |
     ./Util/preconfig
-    ./configure --prefix=/home/vagrant/local --enable-pcre --enable-cap --enable-multibyte --with-tcsetpgrp
+    ./configure --prefix=/home/{{ username }}/local --enable-pcre --enable-cap --enable-multibyte --with-tcsetpgrp
     make
     make install
     make clean
   args:
-    chdir: /home/vagrant/repos/github.com/zsh-users/zsh
+    chdir: /home/{{ username }}/repos/github.com/zsh-users/zsh
   when: result|changed
 
 - name: change login shell to zsh
   user:
-    name: vagrant
+    name: "{{ username }}"
     state: present
-    shell: /home/vagrant/local/bin/zsh
+    shell: /home/{{ username }}/local/bin/zsh
