@@ -62,7 +62,7 @@
   when: result|failed
 
 - name: check setting of timezone
-  shell: test -f /etc/localtime
+  shell: test -f /etc/localtime && ls -l /etc/localtime | grep -q "Asia/Tokyo"
   register: result
   ignore_errors: true
   changed_when: false
