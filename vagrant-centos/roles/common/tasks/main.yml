@@ -27,6 +27,7 @@
     - the_silver_searcher
     - tree
     - unzip
+    - zsh
 
 - name: clone repository of my dotfiles
   become: yes

@@ -48,7 +48,7 @@
 - name: check ruby is installed
   become: yes
   become_user: "{{ username }}"
-  shell: export RBENV_ROOT=/home/{{ username }}/.rbenv; export PATH=$RBENV_ROOT/bin:$PATH; echo N | rbenv versions | grep -q "2.2.3"
+  shell: /usr/bin/zsh -l -c 'rbenv versions | grep -q "2.2.3"'
   register: result
   ignore_errors: true
   changed_when: false
@@ -56,5 +56,11 @@
 - name: install ruby 2.2.3
   become: yes
   become_user: "{{ username }}"
-  shell: export RBENV_ROOT=/home/{{ username }}/.rbenv; export PATH=$RBENV_ROOT/bin:$PATH; echo N | rbenv install 2.2.3
+  shell: /usr/bin/zsh -l -c 'rbenv install 2.2.3'
+  when: result|failed
+
+- name: use ruby 2.2.3
+  become: yes
+  become_user: "{{ username }}"
+  shell: /usr/bin/zsh -l -c 'rbenv global 2.2.3'
   when: result|failed
