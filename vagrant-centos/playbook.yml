@@ -7,7 +7,7 @@
     - git
     - peco
     - mongodb
-    - ricty
+#   - ricty
     - ruby
     - slidy-builder
     - tig
