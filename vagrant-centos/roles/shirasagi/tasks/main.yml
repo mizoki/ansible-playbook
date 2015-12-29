@@ -1,0 +1,84 @@
+- name: clone repository of shirasagi
+  become: yes
+  become_user: "{{ username }}"
+  git:
+    repo: https://github.com/shirasagi/shirasagi.git
+    dest: "{{ shirasagi_install_dir }}"
+
+- name: check config directory
+  become: yes
+  become_user: "{{ username }}"
+  shell: ls -l {{ shirasagi_install_dir }}/config | grep -q "yml"
+  register: result
+  ignore_errors: true
+  changed_when: false
+
+- name: copy config files
+  become: yes
+  become_user: "{{ username }}"
+  shell: cp -n {{ shirasagi_install_dir }}/config/samples/*.{rb,yml} {{ shirasagi_install_dir }}/config/
+  when: result|failed
+
+- name: bundle install
+  become: yes
+  become_user: "{{ username }}"
+  shell: /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && bundle install'
+  when: result|failed
+
+- name: create new site
+  become: yes
+  become_user: "{{ username }}"
+  shell: |
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake db:drop'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake db:create_indexes'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake ss:create_site data="{ name: \"開発用\", host: \"www\", domains: \"{{ shirasagi_ip }}:3000\" }"'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake db:seed name=demo site=www'
+  when: result|failed
+
+- name: create new user
+  become: yes
+  become_user: "{{ username }}"
+  shell: |
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake ss:create_user data="{ name: \"admin\", uid: \"admin\", email: \"admin@example.jp\", password: \"pass\" }"'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake sys:set_admin_role user=admin'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake cms:set_admin_role user=admin site=www'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake gws:set_admin_role user=admin site=シラサギ市'
+  when: result|failed
+
+- name: deploy command
+  become: yes
+  become_user: "{{ username }}"
+  shell: |
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && bin/deploy'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake cms:generate_nodes site=www'
+    /usr/bin/zsh -l -c 'cd {{ shirasagi_install_dir }} && rake cms:generate_pages site=www attachments=1'
+  when: result|failed
+
+- name: copy to script
+  template:
+    src: ../templates/unicorn.service.j2
+    dest: /etc/systemd/system/unicorn.service
+    owner: root
+    group: root
+    mode: "u=rwx,g=rx,o=rx"
+
+- name: start unicorn
+  service:
+    name: unicorn
+    state: started
+
+- name: auto start unicorn
+  service:
+    name: unicorn
+    enabled: true
+
+- name: open 3000 port
+  firewalld:
+    port: 3000/tcp
+    permanent: true
+    state: enabled
+
+- name: restart firewalld
+  service:
+    name: firewalld
+    state: restarted

@@ -1,0 +1,20 @@
+# start unicorn
+
+[Unit]
+Description=SHIRASAGI Unicorn Server
+
+[Service]
+WorkingDirectory={{ shirasagi_install_dir }}
+Environment=RAILS_ENV={{ shirasagi_rails_env }}
+SyslogIdentifier=unicorn
+PIDFile={{ shirasagi_install_dir }}/tmp/pids/unicorn.pid
+
+ExecStart=/home/{{ username }}/.rbenv/shims/unicorn_rails -c {{ shirasagi_install_dir }}/config/unicorn.rb -E {{ shirasagi_rails_env }} -D
+ExecStop=/usr/bin/kill -QUIT $MAINPID
+ExecReload=/bin/kill -USR2 $MAINPID
+
+User={{ username }}
+Group={{ username }}
+
+[Install]
+WantedBy=multi-user.target

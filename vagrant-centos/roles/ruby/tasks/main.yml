@@ -64,3 +64,9 @@
   become_user: "{{ username }}"
   shell: /usr/bin/zsh -l -c 'rbenv global 2.3.0'
   when: result|failed
+
+- name: install bundler
+  become: yes
+  become_user: "{{ username }}"
+  shell: /usr/bin/zsh -l -c 'gem install bundler'
+  when: result|failed

@@ -2,3 +2,6 @@
 
 [all:vars]
 username=vagrant
+shirasagi_ip=127.0.0.1
+shirasagi_install_dir=/home/vagrant/repos/github.com/shirasagi/shirasagi
+shirasagi_rails_env=development
